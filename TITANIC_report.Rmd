@@ -1,0 +1,168 @@
+---
+title: "Titanic_Project"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+#################################################################################################
+#                                       TITANIC DATASET                                         #
+#################################################################################################
+
+Introduction
+	
+	In 1912, there was one of the most devastating maritime disaster in history. RMS Titanic sank in 
+the Atlantic Ocean during its maiden voyage from UK to New York City after colliding with an iceberg.
+Sinking of Titanic claimed lives of 1,514 passengers.For this project, survival of Titanic ship will be 
+predicted by using passengers' information.
+
+Overview
+	
+For this project, Titanic dataset from Kaggle competition will be used. Titanic dataset consist of 891 observations and 12 variables
+1.	PassengerId – ID number of passenger
+2.	Survived – flag shoe that who are survival, this flag will be used as the target for prediction
+3.	Pclass – Class of ticket
+4.	Name  – Name of passengers 
+5.	Sex – Gender of passengers
+6.	Age - Age of passengers
+7.  SibSp - Number of siblings on board
+8.  Parch - Number of Parents on board
+9.  Ticket -Ticket Number
+10. Fare - Price of Ticket
+11. Cabin - Cabin Number
+12. Embarked - Port of Embankment
+
+Executive Summary
+	
+	For comparing performance of predictive algorithm, basic model such as the gender-class model will be 
+base model performance and then model performance will be improved by using more sophisticated algorithm.
+Titanic survival prediction model will be built by using passengers' information. First, the gender-class 
+model will be used. Then, Decision Tree Model will be used to improve model performance by including factors
+that has potential relationship to the target. Finally, Random Forest, which is a sophisticated algorithm,
+will be used to boost model performance.
+
+Data Exploration & Visualization
+
+Please download dataset from my GitHub : https://github.com/iambatty/Titanic-Project/blob/master/train.csv
+
+Check Structure of dataset
+```{r data_structure, echo=FALSE}
+str(df)
+```
+
+Check how many survival
+```{r data_survival, echo=FALSE}
+table(df$Survived)
+prop.table(table(df$Survived))
+```
+
+Check passengers' gender and survival rate of each gender
+```{r data_gender_seuvival, echo=FALSE}
+table(df$Sex)
+prop.table(table(df$Sex, df$Survived))
+prop.table(table(df$Sex, df$Survived),1)
+```
+
+Check passengers' age distribution
+```{r data_agedist, echo=FALSE}
+hist(df$Age)
+```
+
+Check passengers' Fare
+```{r data_passenger_fare, echo=FALSE}
+hist(df$Fare)
+```
+
+Predictive Model
+
+0.1 Create Train-Test set
+Titanic dataset will be separate into two datasets which are train_set and test_set. train_set will be used
+to train model and test_set will be used to evaluated model performance on unseen data.
+
+Survival 
+```{r train_set_survival, echo=FALSE}
+prop.table(table(train_set$Survived))
+```
+
+```{r test_set_survival, echo=FALSE}
+prop.table(table(test_set$Survived))
+```
+
+0.2 Performance Evaluation
+For simplicity, model performance will be evaluated by using accuracy.
+   
+1. The Gender-Class Model
+According to data exploration, 74.20% of female are survival and 81.12% of male died. Thus, for the gender-class model,
+all female will be predicted to be survival.
+
+The Gender-Class Model Confusion Matrix
+```{r model_1_confusionmatrix, echo=FALSE}
+model_1_confusionMatrix
+```
+
+The Gender-Class Model Accuracy
+```{r model_1_accuracy, echo=FALSE}
+accuracy_results %>% knitr::kable()
+```
+
+By using The Gender-Class Model, Accuracy of prediction is 75.98%. Next, Decision Tree which is more sophisticated 
+technic will be used to improve model performance.
+
+2. Decision Tree Model
+For decision Tree, six factors which are Pclass, Sex, Age, SibSp, Parch and Fare will be used to predict
+Survival. Decision Tree is basic classification model and this model can be plot as a tree as plot below.
+
+```{r dt_plot, echo=FALSE}
+rpart.plot(fit_dt, extra = 106)
+```
+
+The Decision Tree Model Confusion Matrix
+```{r model_2_confusionmatrix, echo=FALSE}
+model_2_confusionMatrix
+```
+
+The Decision Tree Model Accuracy
+```{r model_2_accuracy, echo=FALSE}
+accuracy_results %>% knitr::kable()
+```
+
+By using Decision Tree Model, Accuracy of prediction is 76.54%,improved 0.56% from Decision Tree Model. Next, 
+more sophisticated model called 'Random Forest' will be used to improve model performance.
+
+3. Random Forest Model
+For random forest, same factors as decision tree model will be used. However, performance can be improved because of 
+random forest sophisticated technique. Random Forest will make many decision trees and each tree can use only some
+factors for prediction. By combining, all tree together, variance of model will be decrease which improve model 
+performance, this method call "Bagging".
+
+Random Forest Feature Importance
+```{r rf_features, echo=FALSE}
+varImpPlot(fit_rf)
+```
+
+Random Forest Confusion Matrix
+```{r model_3_confusionmatrix, echo=FALSE}
+model_3_confusionMatrix
+```
+
+Random Forest Accuracy
+```{r model_3_accuracy, echo=FALSE}
+accuracy_results %>% knitr::kable()
+```
+
+Model Performance Summary
+Start from base model called 'The Gender-Class Model', model performance was imporved my using 'Decision Tree Model' and 
+'Random Forest Model' which are more sophisticated model.Table below show performance of each recommendation model.
+
+
+```{r model_3_accuracy, echo=FALSE}
+accuracy_results %>% knitr::kable()
+```
+
+Conclusion
+In this project, many classification models is used to solve TITANIC's survival prediction problem. First, base model called 'The Gender-Class Model', model performance was improved my using decision tree model which is
+basic model for classification task. Then, Random Forest Model, which is more sophisticated model, was used to further 
+improve model performance.
+
